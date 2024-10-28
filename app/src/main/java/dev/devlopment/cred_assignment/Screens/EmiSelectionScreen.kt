@@ -2,6 +2,7 @@ package dev.devlopment.cred_assignment.Screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -30,9 +33,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,12 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.devlopment.cred_assignment.API.EmiItem
 import dev.devlopment.cred_assignment.API.Item
+import dev.devlopment.cred_assignment.R
 
 import dev.devlopment.cred_assignment.ViewModels.LoanViewModel
 
 
 @Composable
-fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: () -> Unit) {
+fun EmiSelectionScreen(secondItem: Item?, onProceed: () -> Unit,onSelectEmiPlan: (String, String) -> Unit) {
     val emiPlans = listOf(
         EmiItem(
             title = secondItem?.open_state?.body?.items?.get(0)?.title.toString(),
@@ -68,11 +75,13 @@ fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: ()
         )
     )
 
+    val selectedPlanIndex = remember { mutableStateOf(-1) }
+    val cardColors = listOf(Color(0xFF3c1518), Color(0xFFbfacc8), Color(0xFF007ea7))
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                color = Color(0xFF1E1E1E),
+                color = Color(0xFF1b3a4b),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
     ) {
@@ -104,10 +113,14 @@ fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: ()
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                items(emiPlans) { plan ->
+                itemsIndexed(emiPlans) { index, plan ->
                     EmiPlanCard(
                         plan = plan,
-                        onSelect = { /* Handle plan selection */ }
+                        isSelected = selectedPlanIndex.value == index,
+                        onSelect = { selectedPlanIndex.value = index
+                            onSelectEmiPlan(plan.emi ?: "", plan.duration ?: "")
+                        },
+                        cardColor = cardColors[index % cardColors.size]
                     )
                 }
             }
@@ -133,7 +146,8 @@ fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: ()
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(Color(0xff3d348b))
             ) {
                 secondItem?.cta_text?.let { Text(it, fontSize = 18.sp) }
             }
@@ -144,7 +158,9 @@ fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: ()
 @Composable
 fun EmiPlanCard(
     plan: EmiItem,
+    isSelected: Boolean,
     onSelect: () -> Unit,
+    cardColor: Color, // New parameter to define background color of each card
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -155,7 +171,7 @@ fun EmiPlanCard(
     ) {
         Card(
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF7D6D8E)),
+            colors = CardDefaults.cardColors(containerColor =cardColor),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(
@@ -164,12 +180,27 @@ fun EmiPlanCard(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Icon(
-                    imageVector =  Icons.Default.CheckCircle,
-                    contentDescription = "Selected",
-                    tint = Color.White,
-                    modifier = Modifier.size(32.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            color = if (isSelected) Color.White else cardColor,
+                            shape = CircleShape
+                        )
+                        .border(
+                            width = if (isSelected) 1.dp else 0.dp,
+                            color = if (isSelected) Color.White else Color.Transparent,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = if (isSelected) painterResource(R.drawable.baseline_check_circle_24) else painterResource(R.drawable.baseline_circle_24),
+                        contentDescription = if (isSelected) "Selected" else "Not Selected",
+                        tint = if (isSelected) cardColor else Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -194,7 +225,7 @@ fun EmiPlanCard(
 
                 Text(
                     text = "See calculations",
-                    color = Color.Gray,
+                    color = Color(0xFFB0B3BC),
                     fontSize = 12.sp,
                     textDecoration = TextDecoration.Underline
                 )

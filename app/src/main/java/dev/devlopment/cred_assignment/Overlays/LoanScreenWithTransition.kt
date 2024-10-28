@@ -1,4 +1,5 @@
 package dev.devlopment.cred_assignment.Overlays
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -40,10 +41,14 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
     val item2 = apiResponse.items.getOrNull(1)
     val item3 = apiResponse.items.getOrNull(2)
     var currentScreen by remember { mutableStateOf(0) } // 0: Loan Amount, 1: EMI Selection, 2: Bank Selection
-    var selectedAmount by remember { mutableStateOf("150,000") }
+    var selectedAmount = remember { mutableStateOf("150,000") }
     var selectedEmi by remember { mutableStateOf("4,247") }
     var selectedDuration by remember { mutableStateOf("12 months") }
 
+    // Handle the back button to navigate to previous screen
+    BackHandler(enabled = currentScreen > 0) {
+        currentScreen -= 1
+    }
     // Animation states for all three screens
     val firstScreenOffset by animateFloatAsState(
         targetValue = when(currentScreen) {
@@ -100,7 +105,7 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
                 .zIndex(1f)
         ) {
             LoanAmountScreen(
-                viewModel = LoanViewModel(),
+                selectedAmount = selectedAmount,
                 item1,
                 onProceed = {
                     currentScreen = 1
@@ -112,13 +117,14 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
             modifier = Modifier
                 .fillMaxWidth()
                 .zIndex(3f)
+
         ) {
             // First Header (Credit Amount)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = firstHeaderOffset.dp)
-                    .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
+                    .background(Color(0Xff212f45), shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
                     .clickable(enabled = currentScreen >= 1) {
                         currentScreen = 0
                     }
@@ -141,8 +147,8 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "₹$selectedAmount",
-                            color = Color.White,
+                            text = "₹${selectedAmount.value}",
+                            color = Color.Gray,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -160,7 +166,7 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
                 modifier = Modifier
                     .fillMaxWidth()
                     .offset(y = secondHeaderOffset.dp)
-                    .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
+                    .background(Color(0xFF1b3a4b), shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
                     .clickable(enabled = currentScreen >= 2) {
                         currentScreen = 1
                     }
@@ -179,25 +185,30 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
                                 fontSize = 14.sp
                             )
                             Text(
-                                text = item2?.closed_state?.body?.key2.toString(),
-                                color = Color.White,
+                                text = selectedEmi,
+                                color = Color.Gray,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        Column(horizontalAlignment = Alignment.End) {
+                        Column(horizontalAlignment = Alignment.Start) {
                             Text(
-                                text = "duration",
+                                text = item2?.closed_state?.body?.key2.toString(),
                                 color = Color.Gray,
                                 fontSize = 14.sp
                             )
                             Text(
                                 text = selectedDuration,
-                                color = Color.White,
+                                color = Color.Gray,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Go back",
+                            tint = Color.White
+                        )
                     }
                 }
             }
@@ -217,10 +228,14 @@ fun LoanScreenWithTransition(viewModel: LoanViewModel,apiResponse: ApiResponse) 
                     .background(Color(0xFF1E1E1E), shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
             ) {
                 EmiSelectionScreen(
-                    viewModel = viewModel,item2,
+                    item2,
                     onProceed = {
                         currentScreen = 2
 
+                    },
+                    onSelectEmiPlan = { emi, duration -> // New callback for selecting EMI
+                        selectedEmi = emi
+                        selectedDuration = duration
                     }
                 )
             }

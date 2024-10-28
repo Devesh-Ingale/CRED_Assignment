@@ -23,6 +23,8 @@
     import androidx.compose.foundation.text.BasicTextField
     import androidx.compose.foundation.text.KeyboardOptions
     import androidx.compose.material3.Button
+    import androidx.compose.material3.ButtonColors
+    import androidx.compose.material3.ButtonDefaults
     import androidx.compose.material3.Card
     import androidx.compose.material3.CardDefaults
     import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +33,7 @@
     import androidx.compose.material3.OutlinedTextField
     import androidx.compose.material3.Text
     import androidx.compose.runtime.Composable
+    import androidx.compose.runtime.MutableState
     import androidx.compose.runtime.collectAsState
     import androidx.compose.runtime.getValue
     import androidx.compose.runtime.mutableStateOf
@@ -39,7 +42,9 @@
     import androidx.compose.ui.Alignment
     import androidx.compose.ui.Modifier
     import androidx.compose.ui.geometry.Offset
+    import androidx.compose.ui.geometry.Size
     import androidx.compose.ui.graphics.Color
+    import androidx.compose.ui.graphics.SolidColor
     import androidx.compose.ui.graphics.StrokeCap
     import androidx.compose.ui.graphics.drawscope.Stroke
     import androidx.compose.ui.input.pointer.pointerInput
@@ -61,14 +66,14 @@
     import kotlin.math.sin
 
     @Composable
-    fun LoanAmountScreen( viewModel: LoanViewModel ,firstItem: Item?,onProceed: () -> Unit) {
+    fun LoanAmountScreen(selectedAmount: MutableState<String>,firstItem: Item?, onProceed: () -> Unit) {
 
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Color(0xFF1E1E1E),
+                    Color(0Xff212f45),
                     shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)
                 )
         ) {
@@ -86,7 +91,7 @@
                             Text(
                                 text = it,
                                 //text = "nikunj, how much do you need?",
-                                color = Color.White,
+                                color = Color(0xffe0e1dd),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.padding(top = 16.dp)
@@ -104,7 +109,7 @@
                         }
 
 
-                        CreditAmountCard(firstItem)
+                        CreditAmountCard(firstItem,selectedAmount)
 
 
 
@@ -117,10 +122,12 @@
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 16.dp)
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp)
+                                .height(56.dp)
+                                ,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(Color(0xff3d348b))
                         ) {
-                            firstItem?.cta_text?.let { Text(it, fontSize = 18.sp) }
+                            firstItem?.cta_text?.let { Text(it, fontSize = 16.sp) }
                         }
                     }
         }
@@ -131,7 +138,7 @@
 
 
     @Composable
-    fun CreditAmountCard(firstItem: Item?) {
+    fun CreditAmountCard(firstItem: Item?, selectedAmount: MutableState<String>) {
         Card(
             modifier = Modifier
                 .padding(16.dp)
@@ -169,6 +176,7 @@
                                     sliderValue = newValue
                                     if (!isEditing) {
                                         textFieldValue = TextFieldValue("₹${String.format("%,d", newValue.toInt())}")
+                                        selectedAmount.value = String.format("%,d", newValue.toInt())
                                     }
                                 }
                             )
@@ -215,13 +223,14 @@
                                 .clickable {
                                     isEditing = true
                                     keyboardController?.show()
-                                }
+                                },
+                            cursorBrush = SolidColor(Color.Gray)
                         )
 
                         firstItem?.open_state?.body?.card?.description?.let {
                             Text(
                                 text = it,
-                                color = Color.Green,
+                                color = Color(0xff007200),
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(top = 8.dp)
                             )
@@ -298,7 +307,7 @@
 
             // Draw progress arc
             drawArc(
-                color = Color(0xFFFF7B7B),
+                color = Color(0xFFfe7f2d),
                 startAngle = -90f,
                 sweepAngle = angle,
                 useCenter = false,
@@ -336,7 +345,7 @@
                     handleX - greenRectWidth / 2,
                     handleY - greenRectHeight / 2
                 ),
-                size = androidx.compose.ui.geometry.Size(
+                size = Size(
                     width = greenRectWidth,
                     height = greenRectHeight
                 )

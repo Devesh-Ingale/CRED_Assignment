@@ -28,7 +28,7 @@ fun TopBar() {
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick ={},Modifier.background(color = Color.Gray, shape = CircleShape)) {
+        IconButton(onClick ={},Modifier.background(color = Color(0xff212f45), shape = CircleShape)) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close",
@@ -36,7 +36,7 @@ fun TopBar() {
             )
         }
 
-        IconButton(onClick = {  },Modifier.background(color = Color.Gray, shape = CircleShape)) {
+        IconButton(onClick = {  },Modifier.background(color = Color(0xff212f45), shape = CircleShape)) {
             Icon(
                 painter = painterResource(R.drawable.questionmark),
                 contentDescription = "Help",

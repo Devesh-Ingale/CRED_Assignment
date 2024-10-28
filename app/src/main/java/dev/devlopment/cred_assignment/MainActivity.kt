@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -65,12 +67,17 @@ class MainActivity : ComponentActivity() {
                     }
                     is ApiState.Success -> {
                         val data = (apiState as ApiState.Success).data
-                        Column {
+                        Surface (modifier = Modifier.background(color =Color(0xFF272640) )){
+                            Column(modifier = Modifier.background(Color(0xFF272640))) {
 
-                            TopBar()
-                            Spacer(modifier = Modifier.height(16.dp))
-                            LoanScreenWithTransition( viewModel = LoanViewModel(),apiResponse = data)
+                                TopBar()
+                                Spacer(modifier = Modifier.height(16.dp))
+                                LoanScreenWithTransition(
+                                    viewModel = LoanViewModel(),
+                                    apiResponse = data
+                                )
 
+                            }
                         }
 
                     }
