@@ -130,9 +130,6 @@
 
 
 
-
-
-
     @Composable
     fun CreditAmountCard(firstItem: Item?) {
         Card(
@@ -161,11 +158,13 @@
                     }
                     val keyboardController = LocalSoftwareKeyboardController.current
 
-                    firstItem?.open_state?.body?.card?.maxRange?.toFloat()?.let {
-                        firstItem.open_state.body.card.minRange.toFloat().let { it1 ->
+                    val maxRange= firstItem?.open_state?.body?.card?.max_range?.toFloat()
+                    val minRange= firstItem?.open_state?.body?.card?.min_range?.toFloat()
+                    if (maxRange != null) {
+                        if (minRange != null) {
                             CircularSlider(
                                 value = sliderValue,
-                                maxValue = it, minValue = it1,
+                                maxValue = maxRange, minValue = minRange,
                                 onValueChange = { newValue ->
                                     sliderValue = newValue
                                     if (!isEditing) {
@@ -175,6 +174,8 @@
                             )
                         }
                     }
+
+
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

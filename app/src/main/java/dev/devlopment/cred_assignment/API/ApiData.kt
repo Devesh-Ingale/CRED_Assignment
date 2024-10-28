@@ -36,8 +36,8 @@ data class OpenBody(
 data class Card(
     val header: String,
     val description: String,
-    val maxRange: Int,
-    val minRange: Int
+    val max_range: Int,
+    val min_range: Int
 )
 
 data class EmiItem(
