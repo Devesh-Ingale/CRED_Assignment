@@ -38,14 +38,35 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.devlopment.cred_assignment.API.EmiItem
+import dev.devlopment.cred_assignment.API.Item
 
-import dev.devlopment.cred_assignment.DataClasses.SampleData
 import dev.devlopment.cred_assignment.ViewModels.LoanViewModel
 
 
 @Composable
-fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
-    val emiPlans = SampleData.emiPlans
+fun EmiSelectionScreen(viewModel: LoanViewModel,secondItem: Item?, onProceed: () -> Unit) {
+    val emiPlans = listOf(
+        EmiItem(
+            title = secondItem?.open_state?.body?.items?.get(0)?.title.toString(),
+            subtitle = secondItem?.open_state?.body?.items?.get(0)?.subtitle.toString(),
+            emi = secondItem?.open_state?.body?.items?.get(0)?.emi.toString(),
+            duration = secondItem?.open_state?.body?.items?.get(0)?.duration.toString(),
+        ),
+        EmiItem(
+            title = secondItem?.open_state?.body?.items?.get(1)?.title.toString(),
+            subtitle = secondItem?.open_state?.body?.items?.get(1)?.subtitle.toString(),
+            emi = secondItem?.open_state?.body?.items?.get(1)?.emi.toString(),
+            duration = secondItem?.open_state?.body?.items?.get(1)?.duration.toString(),
+            tag = secondItem?.open_state?.body?.items?.get(1)?.tag.toString()
+        ),
+        EmiItem(
+            title = secondItem?.open_state?.body?.items?.get(2)?.title.toString(),
+            subtitle = secondItem?.open_state?.body?.items?.get(2)?.subtitle.toString(),
+            emi = secondItem?.open_state?.body?.items?.get(2)?.emi.toString(),
+            duration = secondItem?.open_state?.body?.items?.get(2)?.duration.toString(),
+        )
+    )
 
     Box(
         modifier = Modifier
@@ -60,13 +81,24 @@ fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            Text(
-                text = "how do you wish to repay?",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            secondItem?.open_state?.body?.title?.let {
+                Text(
+                    text = it,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+            secondItem?.open_state?.body?.subtitle?.let {
+                Text(
+                    text = it,
+                    color = Color.Gray,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -75,7 +107,7 @@ fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
                 items(emiPlans) { plan ->
                     EmiPlanCard(
                         plan = plan,
-                        onSelect = { viewModel.selectEmiPlan(plan) }
+                        onSelect = { /* Handle plan selection */ }
                     )
                 }
             }
@@ -90,7 +122,7 @@ fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
                 ),
                 border = BorderStroke(1.dp, Color.White)
             ) {
-                Text("Create your own plan")
+                secondItem?.open_state?.body?.footer?.let { Text(it) }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -103,7 +135,7 @@ fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Select your bank account", fontSize = 18.sp)
+                secondItem?.cta_text?.let { Text(it, fontSize = 18.sp) }
             }
         }
     }
@@ -111,7 +143,7 @@ fun EmiSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
 
 @Composable
 fun EmiPlanCard(
-    plan: dev.devlopment.cred_assignment.DataClasses.EmiPlan,
+    plan: EmiItem,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -133,27 +165,30 @@ fun EmiPlanCard(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Icon(
-                    imageVector = if (plan.isSelected) Icons.Default.CheckCircle
-                    else Icons.Default.AccountCircle,
-                    contentDescription = if (plan.isSelected) "Selected" else "Not Selected",
+                    imageVector =  Icons.Default.CheckCircle,
+                    contentDescription = "Selected",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "₹${plan.monthlyAmount}/mo",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                plan.emi?.let {
+                    Text(
+                        text = it,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-                Text(
-                    text = "for ${plan.durationMonths} months",
-                    color = Color(0xFFB0B3BC),
-                    fontSize = 14.sp
-                )
+                plan.duration?.let {
+                    Text(
+                        text = it,
+                        color = Color(0xFFB0B3BC),
+                        fontSize = 14.sp
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -166,7 +201,7 @@ fun EmiPlanCard(
             }
         }
 
-        if (plan.isRecommended) {
+        if (plan.tag=="recommended") {
             Text(
                 text = "recommended",
                 color = Color.Black,
@@ -185,8 +220,3 @@ fun EmiPlanCard(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun EmiSelectionScreenPreview() {
-    EmiSelectionScreen(viewModel = LoanViewModel()) { }
-}

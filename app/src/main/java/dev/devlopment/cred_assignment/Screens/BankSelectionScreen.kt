@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -29,21 +30,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dev.devlopment.cred_assignment.DataClasses.BankAccount
-import dev.devlopment.cred_assignment.DataClasses.SampleData
+import dev.devlopment.cred_assignment.API.Card
+import dev.devlopment.cred_assignment.API.EmiItem
+import dev.devlopment.cred_assignment.API.Item
+import dev.devlopment.cred_assignment.R
 import dev.devlopment.cred_assignment.ViewModels.LoanViewModel
 
 @Composable
-fun BankSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
-    val bankAccounts = SampleData.bankAccounts
-    TopBar()
+fun BankSelectionScreen(viewModel: LoanViewModel, thirdItem: Item?, onProceed: () -> Unit) {
+    val bankAccounts = listOf(
+        EmiItem(
+            icon = thirdItem?.open_state?.body?.items?.get(0)?.icon.toString(),  // replace with actual icon if available
+            title = thirdItem?.open_state?.body?.items?.get(0)?.title.toString(),
+            subtitle = thirdItem?.open_state?.body?.items?.get(0)?.subtitle.toString(),
+             // Default selection, adjust as per logic
+        ),
+        EmiItem(
+            icon = thirdItem?.open_state?.body?.items?.get(1)?.icon.toString(),  // replace with actual icon if available
+            title = thirdItem?.open_state?.body?.items?.get(1)?.title.toString(),
+            subtitle = thirdItem?.open_state?.body?.items?.get(1)?.subtitle!!.toString(),
+            // Default selection, adjust as per logic
+        ),
+        EmiItem(
+            icon = thirdItem?.open_state?.body?.items?.get(2)?.icon.toString(),  // replace with actual icon if available
+            title = thirdItem?.open_state?.body?.items?.get(2)?.title.toString(),
+            subtitle = thirdItem?.open_state?.body?.items?.get(2)?.subtitle!!.toString(),
+            // Default selection, adjust as per logic
+        )
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF1E1E1E))
     ) {
         Text(
-            text = "where should we send the money?",
+            text = thirdItem.open_state.body.title,
             color = Color.White,
             modifier = Modifier.padding(16.dp)
         )
@@ -55,7 +77,7 @@ fun BankSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
             items(bankAccounts) { account ->
                 BankAccountItem(
                     account = account,
-                    onSelect = { viewModel.selectBank(account) }
+                    onSelect = {  }
                 )
             }
         }
@@ -63,10 +85,10 @@ fun BankSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
         OutlinedButton(
             onClick = { /* Handle account change */ },
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentSize()
                 .padding(16.dp)
         ) {
-            Text("Change account")
+            Text(thirdItem?.open_state?.body?.footer.toString())
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -79,13 +101,13 @@ fun BankSelectionScreen(viewModel: LoanViewModel, onProceed: () -> Unit) {
                 .height(56.dp),
             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
         ) {
-            Text("Tap for 1-click KYC")
+            Text(thirdItem?.cta_text.toString())
         }
     }
 }
 @Composable
 fun BankAccountItem(
-    account: BankAccount,
+    account: EmiItem,
     onSelect: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,8 +124,8 @@ fun BankAccountItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = account.icon),
-                contentDescription = account.bankName,
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = account.title,
                 modifier = Modifier
                     .size(40.dp)
                     .background(Color.White, CircleShape)
@@ -112,23 +134,16 @@ fun BankAccountItem(
 
             Column {
                 Text(
-                    text = account.bankName,
+                    text = account.title,
                     color = Color.White
                 )
 
                 Text(
-                    text = account.accountNumber,
+                    text = account.subtitle.toString(),
                     color = Color.Gray
                 )
             }
         }
 
-        if (account.isSelected) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = "Selected",
-                tint = Color.White
-            )
-        }
     }
 }
