@@ -1,5 +1,7 @@
 package dev.devlopment.cred_assignment.API
 
+import retrofit2.http.Body
+
 data class ApiResponse(
     val items: List<Item>
 )
@@ -11,32 +13,38 @@ data class Item(
 )
 
 data class OpenState(
-    val body: Body
+    val body: OpenBody
 )
 
 data class ClosedState(
-    val body: Map<String, String>
+    val body: ClosedBody
 )
 
-data class Body(
+
+data class ClosedBody(
+    val key1: String? = null, // e.g., "emi"
+    val key2: String? = null  // e.g., "duration"
+)
+data class OpenBody(
     val title: String,
     val subtitle: String,
     val card: Card? = null,
-    val items: List<EmiPlan2>? = null,
+    val items: List<EmiItem>? = null,
     val footer: String
 )
 
 data class Card(
     val header: String,
     val description: String,
-    val max_range: Int,
-    val min_range: Int
+    val maxRange: Int,
+    val minRange: Int
 )
 
-data class EmiPlan2(
-    val emi: String,
-    val duration: String,
+data class EmiItem(
+    val emi: String? = null,
+    val duration: String? = null,
     val title: String,
     val subtitle: String,
-    val tag: String? = null
+    val tag: String? = null,
+    val icon: String? = null
 )
