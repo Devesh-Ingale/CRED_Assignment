@@ -76,7 +76,7 @@ fun EmiSelectionScreen(secondItem: Item?, onProceed: () -> Unit,onSelectEmiPlan:
     )
 
     val selectedPlanIndex = remember { mutableStateOf(-1) }
-    val cardColors = listOf(Color(0xFF3c1518), Color(0xFFbfacc8), Color(0xFF007ea7))
+    val cardColors = listOf(Color(0xFF3c1518), Color(0xFF783f8e), Color(0xFF007ea7))
     Box(
         modifier = Modifier
             .fillMaxSize()
